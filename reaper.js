@@ -111,6 +111,7 @@ function init() {
  // script.log("Custom module init");
  
  	temp = local.values.addFloatParameter("Tempo", "", 0);
+// 	local.values.addTrigger("Get Tempo", "Get Names from the Console" , false);
 
 /*
 //===================== TRACK No CONTAINER ===================		
@@ -155,6 +156,7 @@ function init() {
 	//========================== TRACK PARAMETERS CONTAINER ============================	
 	seltr = local.values.addContainer("Track Params");
 		seltr.setCollapsed(true);
+		seltr.addStringParameter("First BankTrack No", "", "");
 		seltr.addTrigger("Set Track", "" , false);
 		seltr.addIntParameter("Track","Select the Channel Number",1,1) ;
 		seltr.addTrigger("Track back", "Get Params from the Console" , false);		
@@ -178,11 +180,14 @@ function init() {
 //==========================SELECT FX AND PARAMS CONTAINER ============================	
 	fxparam = local.values.addContainer("Fx Params");
 		fxparam.setCollapsed(true);
+		fxparam.addStringParameter("First BankTrack No", "", "");
 		fxparam.addTrigger("Reset", "" , false);
 		var max = local.parameters.fxCount.get() ;
 		fxparam.addIntParameter("Track No","Select the Channel Number",1,1) ;
 		fxparam.addIntParameter("Fx Number","Select the Fx Number",1,1,12) ;
 		fxparam.addTrigger("Sync Params", "" , false);
+		fxparam.addStringParameter("Track Number", "", "");
+		fxparam.addStringParameter("Track Name", "", "");
 		fxparam.addStringParameter("Fx Name", "", "");	
 		for (var n = 1; n < fxParamCount + 1; n++) {
 			fxparam.addStringParameter(n+" ParamName", "", "");
@@ -212,6 +217,9 @@ function moduleParameterChanged(param) {
 
 function moduleValueChanged(value) {
 
+	if (value.name == "getTempo"){
+  	local.send("/tempo");  }
+
 	if (value.name == "setTrack"){
   	var no=local.values.trackParams.track.get();
   	local.send("/device/track/select/"+no);  }
@@ -229,14 +237,6 @@ function moduleValueChanged(value) {
    	if (value.name == "trackNext"){ 
   	local.send("/device/track/+");
   	local.send("/reaper/track/follows/device"); }
-  	
-  	if (value.name == "clickToSync"){
-  	var no=local.values.fxParams.trackNo.get();
- 	var fxno =  local.values.fxParams.fxNumber.get();
-//	local.send("/device/track/select/"+no);  
-//  local.send("/reaper/track/follows/device");
-  	local.send("/track/"+no+"/fx/"+fxno+"/name");
-  	local.send("/track/"+no+"/fx/"+fxno+"/value"); }
   
   	if (value.name == "syncParams"){
   	var no=local.values.fxParams.trackNo.get();
@@ -246,7 +246,9 @@ function moduleValueChanged(value) {
   	local.send("/reaper/track/follows/device");  }
  
   	if (value.name == "reset"){ 
-  	local.values.fxParams.fxName.set(""); 
+  	local.values.fxParams.fxName.set("");
+  	local.values.fxParams.trackName.set("");
+  	local.values.fxParams.trackNumber.set(""); 
 	for (var n = 1; n < fxParamCount+1 ; n++) {	
 	var child = n+"ParamName" ;
 	local.values.fxParams.getChild(n+"ParamName").set("");
@@ -282,7 +284,9 @@ function oscEvent(address, args) {
 //		local.values.trackNo.getChild("Track"+n ).set(args[0]);
 		local.values.bankTracks.getChild(n+"TrackNo").set(args[0]); } }
 		if (address == "/track/1/number/str"){
-		local.values.bankTracks.firstBankTrackNo.set(args[0]);}
+		local.values.bankTracks.firstBankTrackNo.set(args[0]);
+		local.values.trackParams.firstBankTrackNo.set(args[0]);
+		local.values.fxParams.firstBankTrackNo.set(args[0]);}
 
 //=============== TRACKNAMES ==================
 //		local.values.names.firstBankTrackNo.set(numb[0]); 
@@ -315,21 +319,28 @@ function oscEvent(address, args) {
 	
 //====================FX PRAMETERS ================
 	var fxno = local.values.fxParams.fxNumber.get() ;
-	if (address == "/fx/"+fxno+"/name")
+	if (address == "/fx/name")
 	{var fxlabel = args[0];
 	local.values.fxParams.fxName.set(fxlabel);}
 	
 	for (var n = 1; n < fxParamCount + 1; n++) {	
-	var addr = "/fx/"+fxno+"/fxparam/"+n+"/value" ;
+//	var addr = "/fx/"+fxno+"/fxparam/"+n+"/value" ;
+	var addr = "/fxparam/"+n+"/value" ;
 	var val = args[0];
 	if (address == addr){
 	local.values.fxParams.getChild(n+"ParamVal").set(val);}   }
 	
 	for (var n = 1; n < fxParamCount + 1; n++) {
-	var addr = "/fx/"+fxno+"/fxparam/"+n+"/name" ;
+//	var addr = "/fx/"+fxno+"/fxparam/"+n+"/name" ;
+	var addr = "/fxparam/"+n+"/name" ;
 	var val = args[0];
 	if (address == addr){
 	local.values.fxParams.getChild(n+"ParamName").set(val);}  }
+	
+	if (address == "/track/name") {
+	local.values.fxParams.trackName.set(args[0]);}
+	if (address == "/track/number/str") {
+	local.values.fxParams.trackNumber.set(args[0]);}
 	
 //=============== VU METERS ==================
 		local.values.meters.firstBankTrackNo.set(numb[0]);
