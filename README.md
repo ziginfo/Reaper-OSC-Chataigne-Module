@@ -6,5 +6,5 @@ In Chataigne you will find this module under "Software" and "Community Modules" 
 
 The OSC-Remote-Port can be 7000; the Local Port for feedback from Reaper can be 9000 or any other...  
 
-Pleas be aware that, when you change any values in the Parameters (BankTracksCount, SendsCound, FxCount etc etc) you must save the Chataigne-Session and reload the file (cmd-shift-O) !
+Please be aware that, when you change any values in the Parameters (BankTracksCount, SendsCound, FxCount etc etc) you must save the Chataigne-Session and reload the file (cmd-shift-O) !
 
