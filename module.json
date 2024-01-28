@@ -39,7 +39,7 @@
 		"BankTracksCount":{"type":"Integer", "min":4,"max":32, "default":8},
 		"SendCount":{"type":"Integer", "min":4,"max":12, "default":4},
 		"FxCount":{"type":"Integer", "min":4,"max":12},
-		"FxParamCount":{"type":"Integer", "min":10,"max":32, "default":10} 
+		"FxParamCount":{"type":"Integer", "min":12,"max":32, "default":12} 
 	},
 	
 	"scripts": ["reaper.js"],
@@ -170,6 +170,19 @@
 		"Bank next" : {
 			"menu" : "TrackActions",
 			"callback" : "bank_next"
+			},
+			
+		"Bank select" : {
+			"menu" : "TrackActions",
+			"callback" : "bank_sel",
+			"parameters" : {
+						
+				"Bank No": {
+					"type": "Integer",
+					"default": 1, 
+					"min":1,
+					"max":8,
+					"useForMapping": true	} }
 			},
 			
 		"Track back" : {

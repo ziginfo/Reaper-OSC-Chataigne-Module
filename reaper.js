@@ -108,10 +108,11 @@ var selTrackFull = {
 //====================================================================
 
 function init() {
- // script.log("Custom module init");
+
+	local.send("/device/track/bank/select/1") ;
  
- 	temp = local.values.addFloatParameter("Tempo", "", 0);
-// 	local.values.addTrigger("Get Tempo", "Get Names from the Console" , false);
+ 	local.values.addFloatParameter("Tempo", "", 0);
+// 	local.values.addTrigger("Get Tempo", "" , false);
 
 /*
 //===================== TRACK No CONTAINER ===================		
@@ -143,7 +144,8 @@ function init() {
 //===================== BANK TRACKS CONTAINER ===================		
 	bankTracks=local.values.addContainer("Bank Tracks");
 		bankTracks.setCollapsed(true);
-		bankTracks.addStringParameter("First BankTrack No", "", "");	
+		bankTracks.addTrigger("Reset", "" , false);	
+		bankTracks.addStringParameter("First BankTrack No", "", "");
 		bankTracks.addTrigger("Bank back", "Get Infos from the Console" , false);		
 		bankTracks.addTrigger("Bank next", "Get Infos from the Console" , false);
 		for (var n = 1; n < banktrCount+1; n++) {
@@ -183,7 +185,7 @@ function init() {
 		fxparam.addStringParameter("First BankTrack No", "", "");
 		fxparam.addTrigger("Reset", "" , false);
 		var max = local.parameters.fxCount.get() ;
-		fxparam.addIntParameter("Track No","Select the Channel Number",1,1) ;
+//		fxparam.addIntParameter("Track No","Select the Channel Number",1,1) ;
 		fxparam.addIntParameter("Fx Number","Select the Fx Number",1,1,12) ;
 		fxparam.addTrigger("Sync Params", "" , false);
 		fxparam.addStringParameter("Track Number", "", "");
@@ -218,41 +220,44 @@ function moduleParameterChanged(param) {
 function moduleValueChanged(value) {
 
 	if (value.name == "getTempo"){
-  	local.send("/tempo");  }
+  		local.send("/tempo");  }
 
 	if (value.name == "setTrack"){
-  	var no=local.values.trackParams.track.get();
-  	local.send("/device/track/select/"+no);  }
+  		var no=local.values.trackParams.track.get();
+  		local.send("/device/track/select/"+no);  }
 
   	if (value.name == "bankBack"){
-  	local.send("/device/track/count" , banktrCount);
- 	 local.send("/device/track/bank/-"); }
+  		local.send("/device/track/count" , banktrCount);
+ 	 	local.send("/device/track/bank/-"); }
   	if (value.name == "bankNext"){
-  	local.send("/device/track/count" , banktrCount);
- 	 local.send("/device/track/bank/+"); }
+  		local.send("/device/track/count" , banktrCount);
+ 	 	local.send("/device/track/bank/+"); }
   
   	if (value.name == "trackBack"){
-  	local.send("/device/track/-");  
-  	local.send("/reaper/track/follows/device");}
+  		local.send("/device/track/-");  
+  		local.send("/reaper/track/follows/device");}
    	if (value.name == "trackNext"){ 
-  	local.send("/device/track/+");
-  	local.send("/reaper/track/follows/device"); }
+  		local.send("/device/track/+");
+  		local.send("/reaper/track/follows/device"); }
   
   	if (value.name == "syncParams"){
-  	var no=local.values.fxParams.trackNo.get();
-  	var fxno =  local.values.fxParams.fxNumber.get();
-  	local.send("/device/fx/select/"+fxno);
-  	local.send("/device/track/select/"+no);
-  	local.send("/reaper/track/follows/device");  }
+//  	var no=local.values.fxParams.trackNo.get();
+  		var fxno =  local.values.fxParams.fxNumber.get();
+  		local.send("/device/fx/select/"+fxno);
+  		local.send("/device/track/select/"+no);
+  		local.send("/reaper/track/follows/device");  }
  
   	if (value.name == "reset"){ 
-  	local.values.fxParams.fxName.set("");
-  	local.values.fxParams.trackName.set("");
-  	local.values.fxParams.trackNumber.set(""); 
-	for (var n = 1; n < fxParamCount+1 ; n++) {	
-	var child = n+"ParamName" ;
-	local.values.fxParams.getChild(n+"ParamName").set("");
-	local.values.fxParams.getChild(n+"ParamVal").set(0);}   } 
+  		local.send("/device/track/bank/select/1") ;
+  		local.values.fxParams.fxName.set("");
+//  	local.values.fxParams.trackName.set("");
+//  	local.values.fxParams.trackNumber.set(""); 
+		for (var n = 1; n < fxParamCount+1 ; n++) {	
+		var child = n+"ParamName" ;
+		local.values.fxParams.getChild(n+"ParamName").set("");
+		local.values.fxParams.getChild(n+"ParamVal").set(0);}   } 
+	
+	
   
 }
 
@@ -435,6 +440,11 @@ function bank_back()
 function bank_next()
 {
 	local.send("/device/track/bank/+");
+}
+
+function bank_sel(no)
+{
+	local.send("/device/track/bank/select/"+no) ;
 }
 
 function track_back()
