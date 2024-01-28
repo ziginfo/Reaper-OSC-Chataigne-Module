@@ -5,8 +5,8 @@
 	
 	"version": "1.2.5",
 	"description": "Allow you to control Ligic-Pro with chataigne",
-	"url":"https://github.com/ziginfo/LogicPro-Chataigne-Module.git",
-	"downloadURL": "https://github.com/ziginfo/LogicPro-Chataigne-Module/archive/refs/heads/main.zip",
+	"url":"https://github.com/ziginfo/Reaper-OSC-Chataigne-Module",
+	"downloadURL": "https://github.com/ziginfo/Reaper-OSC-Chataigne-Module/archive/refs/heads/main.zip",
 	
 	"hasInput": true,
 	"hasOutput": true, 
