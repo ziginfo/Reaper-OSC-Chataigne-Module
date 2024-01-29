@@ -9,3 +9,9 @@ The OSC-Remote-Port can be 7000; the Local Port for feedback from Reaper can be 
 Please be aware that, when you change any values in the Parameters (BankTracksCount, SendsCound, FxCount etc etc) you must save the Chataigne-Session and reload the file (cmd-shift-O) !
 Please note also that "Track-Numbers" for the "Track-Actions" are always "relativ numbers" in relationship of the actual active Bank !! 
 
+Have Fun...
+
+To learn more about Chataigne, please visit : http://benjamin.kuperberg.fr/chataigne/    
+And Ben's Youtube channel where you can find tutorials : https://youtu.be/RSBU9MwJNLY
+
+
