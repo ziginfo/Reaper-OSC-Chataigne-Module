@@ -2,6 +2,7 @@
 var banktrCount = local.parameters.bankTracksCount.get();
 var fxCount = local.parameters.fxCount.get();
 var fxParamCount = local.parameters.fxParamCount.get();
+var sendCount = local.parameters.sendCount.get();
 var temp = "/tempo/raw" ;
 var fxno ;
 
@@ -19,7 +20,7 @@ var selTrack = {
 	
 	"master" : ["Master Level", "s","/master/volume/str", ""],
 	
-	"sendname1" : ["SendName1", "s","/track/send/1/name", ""],
+/*	"sendname1" : ["SendName1", "s","/track/send/1/name", ""],
 	"sendlevel1" : ["SendLevel1", "f","/track/send/1/volume", ""],
 	"sendval1" : ["SendVal1", "s","/track/send/1/volume/str", ""],
 	"sendname2" : ["SendName2", "s","/track/send/2/name", ""],
@@ -42,8 +43,11 @@ var selTrack = {
 	"insert5" : ["Insert5", "s","/fx/5/name", ""],
 	"insert6" : ["Insert6", "s","/fx/6/name", ""],
 	"insert7" : ["Insert7", "s","/fx/7/name", ""],
-	"insert8" : ["Insert8", "s","/fx/8/name", ""] };
-	
+	"insert8" : ["Insert8", "s","/fx/8/name", ""] 
+*/	
+	};
+
+/*	
 var selTrackFull = {
 	"trackno"	:	["TrackNo", "s", "/track/number/str", ""],
 	"name"	:	["Label", "s", "/track/name", ""],
@@ -101,7 +105,7 @@ var selTrackFull = {
 	"insert6" : ["Insert6", "s","/3/insertname6", ""],
 	"insert7" : ["Insert7", "s","/3/insertname7", ""],
 	"insert8" : ["Insert8", "s","/3/insertname8", ""] };
-
+*/
 
 //====================================================================
 //						INITIAL FUNCTIONS 
@@ -155,18 +159,15 @@ function init() {
 			bankTracks.addFloatParameter(n+" Level", "", 0, 0, 1); }
 			
 			
-	//========================== TRACK PARAMETERS CONTAINER ============================	
+//================= TRACK PARAMETERS CONTAINER ============================	
 	seltr = local.values.addContainer("Track Params");
 		seltr.setCollapsed(true);
 		seltr.addStringParameter("First BankTrack No", "", "");
-		seltr.addTrigger("Set Track", "" , false);
 		seltr.addIntParameter("Track","Select the Channel Number",1,1) ;
+		seltr.addTrigger("Set Track", "" , false);
 		seltr.addTrigger("Track back", "Get Params from the Console" , false);		
 		seltr.addTrigger("Track next", "GetParams from the Console" , false);
-		
-//		seltr.addIntParameter("Relative Track No","Select the Channel Number",1,1,8) ;
-//		seltr.addTrigger("Sync Params", "" , false);
-		
+
 		var champs = util.getObjectProperties(selTrack);
 		for (var n = 0; n < champs.length; n++) {
 			if (selTrack[champs[n]][1] == "f") {
@@ -178,16 +179,22 @@ function init() {
 			else if (selTrack[champs[n]][1] == "s") {
 			seltr.addStringParameter(selTrack[champs[n]][0], "", ""); } }
 			
-	
-//==========================SELECT FX AND PARAMS CONTAINER ============================	
+		for (var n = 1; n < sendCount + 1; n++) {
+		seltr.addStringParameter("SendName"+n, "", "");
+		seltr.addFloatParameter("SendLevel"+n, "", 0 , 0, 1); }	
+		for (var n = 1; n < fxCount + 1; n++) {
+		seltr.addStringParameter("Insert"+n, "", "");}
+//================= SELECT FX AND PARAMS CONTAINER ============================	
 	fxparam = local.values.addContainer("Fx Params");
 		fxparam.setCollapsed(true);
 		fxparam.addStringParameter("First BankTrack No", "", "");
 		fxparam.addTrigger("Reset", "" , false);
 		var max = local.parameters.fxCount.get() ;
 //		fxparam.addIntParameter("Track No","Select the Channel Number",1,1) ;
-		fxparam.addIntParameter("Fx Number","Select the Fx Number",1,1,12) ;
 		fxparam.addTrigger("Sync Params", "" , false);
+		fxparam.addIntParameter("Fx Number","Select the Fx Number",1,1,12) ;
+		fxparam.addTrigger("Track back", "Get Params from the Console" , false);		
+		fxparam.addTrigger("Track next", "GetParams from the Console" , false);
 		fxparam.addStringParameter("Track Number", "", "");
 		fxparam.addStringParameter("Track Name", "", "");
 		fxparam.addStringParameter("Fx Name", "", "");	
@@ -204,8 +211,8 @@ function init() {
 		for (var n = 1; n < banktrCount+1; n++) {
 			vus.addFloatParameter("Track "+n+"L", "", 0, 0, 1);
 			vus.addFloatParameter("Track "+n+"R", "", 0, 0, 1); }
-			
-			
+		vus.addFloatParameter("Master L", "", 0, 0, 1);
+		vus.addFloatParameter("Master R", "", 0, 0, 1);			
 }
 
 
@@ -257,8 +264,9 @@ function moduleValueChanged(value) {
 		local.values.fxParams.getChild(n+"ParamName").set("");
 		local.values.fxParams.getChild(n+"ParamVal").set(0);}   } 
 	
-	
-  
+//		var track = local.values.trackParams.trackNo.get();
+//		track = Integer.parseInt(track);
+//  		local.values.trackParams.track.set(track);
 }
 
 
@@ -320,6 +328,24 @@ function oscEvent(address, args) {
 	var val = args[0];
 	if (address == addr){
 	local.values.trackParams.getChild(child).set(val);}  }
+	
+	for (var n = 1; n < sendCount +1; n++) {
+	var addr = "/track/send/"+n+"/name";
+	var child = "SendName"+n;
+	if (address == addr){
+	local.values.trackParams.getChild(child).set(args[0]);}  }
+	
+	for (var n = 1; n < sendCount +1; n++) {
+	var addr = "/track/send/"+n+"/volume";
+	var child = "SendLevel"+n;
+	if (address == addr){
+	local.values.trackParams.getChild(child).set(args[0]);}  }
+	
+	for (var n = 1; n < fxCount +1; n++) {
+	var addr = "/fx/"+n+"/name";
+	var child = "Insert"+n;
+	if (address == addr){
+	local.values.trackParams.getChild(child).set(args[0]);}  }
 
 	
 //====================FX PRAMETERS ================
@@ -359,109 +385,111 @@ function oscEvent(address, args) {
 		if (address == addr){
 		var child = "Track"+n+"R" ;
 		local.values.meters.getChild(child).set(args[0]);} }
+		if (address == "/master/vu/L"){
+		local.values.meters.masterL.set(args[0]); }
+		if (address == "/master/vu/R"){
+		local.values.meters.masterR.set(args[0]); }
 
 }
 
 
 // Generic Functions
 
-function master_volume(val)
-{
+function master_volume(val) {
 	local.send("/master/volume", val);
 }
 
-function volume(no, val)
-{
-	local.send("/track/"+no+"/volume", val);
-	
+function volume(no, val) {
+	local.send("/track/"+no+"/volume", val);	
 }
 
-function mute(no)
-{
+function pan(no, val) {
+	local.send("/track/"+no+"/pan", val);	
+}
+
+function mute(no) {
 	local.send("/track/"+no+"/mute/toggle");
 }
 
-function solo(no, val)
-{
+function solo(no, val) {
 	local.send("/track/"+no+"/solo/toggle");
 }
 
-function select(no, val)
-{
+function select(no, val) {
 	local.send("/device/track/select/"+no);
 	local.send("/reaper/track/follows/device");
 }
 
-function solo_reset()
-{
+function send(no, send, val) {
+	local.send("/track/"+no+"/send/"+send+"/volume", val);	
+}
+
+function solo_reset() {
 	local.send("/soloreset");
 }
 
-function play()
-{
+function play() {
 	local.send("/play");
 }
 
-function stop()
-{
+function stop() {
 	local.send("/stop");
 }
 
-function cycle()
-{
+function cycle() {
 	local.send("/cycle");
 }
 
-function rec()
-{
+function rec() {
 	local.send("/rec");
 }
 
-function click()
-{
+function click() {
 	local.send("/click");
 }
 
-function rwind()
-{
+function rwind() {
 	local.send("/rewind");
 }
 
-function forward()
-{
+function forward() {
 	local.send("/forward");
 }
 
-function bank_back()
-{
+function bank_back() {
 	local.send("/device/track/bank/-");
 }
 
-function bank_next()
-{
+function bank_next() {
 	local.send("/device/track/bank/+");
 }
 
-function bank_sel(no)
-{
+function bank_sel(no) {
 	local.send("/device/track/bank/select/"+no) ;
 }
 
-function track_back()
-{
+function track_back() {
 	local.send("/device/track/-");
 	local.send("/reaper/track/follows/device");
 }
 
-function track_next()
-{
+function track_next() {
 	local.send("/device/track/+");
 	local.send("/reaper/track/follows/device");
 }
 
+function preset_next(no, fx) {
+	local.send("/track/"+no+"/fx/"+fx+"/preset+");
+}
 
-/* next functions :
-/3/mInsertEdit/12/1
-/3/insertbypass/12/1
-*/
+function preset_prev(no, fx) {
+	local.send("/track/"+no+"/fx/"+fx+"/preset-");
+}
 
+function fx_drywet(no, fx, val) {
+	local.send("/track/"+no+"/fx/"+fx+"/wetdry", val);
+}
+
+function fx_bypass (no, fx, val) {
+	local.send("/track/"+no+"/fx/"+fx+"/bypass", val);
+}
