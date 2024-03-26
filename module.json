@@ -3,7 +3,7 @@
 	"type": "OSC",
 	"path": "Software",
 	
-	"version": "1.3",
+	"version": "1.4",
 	"description": "Allow you to control Ligic-Pro with chataigne",
 	"url":"https://github.com/ziginfo/Reaper-OSC-Chataigne-Module",
 	"downloadURL": "https://github.com/ziginfo/Reaper-OSC-Chataigne-Module/archive/refs/heads/main.zip",
@@ -29,7 +29,7 @@
 		"OSC Outputs": {
 			"OSC Output": {
 				"local" : false,
-				"remoteHost" : "",
+				"remoteHost" : "192.168.50.177",
 				"remotePort" : 7000,
 				"listenToFeedback":false } }
 	},
@@ -320,7 +320,94 @@
 					"min":0,
 					"max":1,
 					"useForMapping": true } 
-			 }  }
+			 }  },
+			 
+		"Prev Marker" : {
+			"menu" : "Markers",
+			"callback" : "prev_mark"
+			},
+			
+		"Next Marker" : {
+			"menu" : "Markers",
+			"callback" : "next_mark"
+			},
+			
+		"Go To Marker" : {
+			"menu" : "Markers",
+			"callback" : "goto_mark",
+			"parameters" : {
+			
+				"Go To Marker": {
+					"type": "Enum",
+					"options" : {
+						"1" : 40161 , 
+						"2" : 40162,
+						"3" : 40163 , 
+						"4" : 40164 , 
+						"5" : 40165 , 
+						"6" : 40166 , 
+						"7" : 40167 , 
+						"8" : 40168 , 
+						"9" : 40169 , 
+						"10" : 40160 , 
+						"11" : 41251 , 
+						"12" : 41252 , 
+						"13" : 41253 , 
+						"14" : 41254 , 
+						"15" : 41255 , 
+						"16" : 41256 , 
+						"17" : 41257 , 
+						"18" : 41258 , 
+						"19" : 41259 , 
+						"20" : 41260 , 
+						"21" : 41261 , 
+						"22" : 41262 , 
+						"23" : 41263 , 
+						"24" : 41264 , 
+						"25" : 41265 , 
+						"26" : 41266 , 
+						"27" : 41267 , 
+						"28" : 41268 , 
+						"29" : 41269 , 
+						"30" : 41270     } } }
+			},
+			
+		"Set New Marker" : {
+			"menu" : "Markers",
+			"callback" : "add_mark"
+			},
+			
+		"Edit Marker" : {
+			"menu" : "Markers",
+			"callback" : "edit_mark"
+			},
+			
+		"ReNumber All Markers" : {
+			"menu" : "Markers",
+			"callback" : "renumber_mark"
+			},
+			
+		"ReMove Markers Timeline" : {
+			"menu" : "Markers",
+			"callback" : "remove_mark"
+			},
+			
+		"Rename Marker" : {
+			"menu" : "Markers",
+			"callback" : "rename_mark",
+			"parameters" : {
+						
+				"Marker No No": {
+					"type": "Integer",
+					"default": 1, 
+					"min":1,
+					"max":30,				
+					"useForMapping": true	}, 
+					
+				"Name": {
+					"type": "String" }  
+		} 
+			}
 
 
 

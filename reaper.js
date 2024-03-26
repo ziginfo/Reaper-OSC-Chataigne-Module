@@ -8,6 +8,9 @@ var fxno ;
 
 var trNumb = ["/track/1/number/str","/track/2/number/str","/track/3/number/str","/track/4/number/str","/track/5/number/str","/track/6/number/str","/track/7/number/str","/track/8/number/str"] ;
 var numb;
+var markNo = [40161 , 40162 , 40163 , 40164 , 40165 , 40166 , 40167 , 40168 , 40169 , 
+		40160 , 40251 , 40252 , 40253 , 40254 , 40255 , 40256 , 40257 , 40258 , 40259 , 40260 , 
+		40261 , 40262 , 40263 , 40264 , 40265 , 40266 , 40267 , 40268 , 40269 , 40270 ];
 var selTrack = {
 	"trackno"	:	["TrackNo", "s", "/track/number/str", ""],
 	"name"	:	["Label", "s", "/track/name", ""],
@@ -114,7 +117,7 @@ var selTrackFull = {
 function init() {
 
 	local.send("/device/track/bank/select/1") ;
- 
+ 	local.values.addFloatParameter("Time", "", 0);
  	local.values.addFloatParameter("Tempo", "", 0);
 // 	local.values.addTrigger("Get Tempo", "" , false);
 
@@ -184,6 +187,7 @@ function init() {
 		seltr.addFloatParameter("SendLevel"+n, "", 0 , 0, 1); }	
 		for (var n = 1; n < fxCount + 1; n++) {
 		seltr.addStringParameter("Insert"+n, "", "");}
+		
 //================= SELECT FX AND PARAMS CONTAINER ============================	
 	fxparam = local.values.addContainer("Fx Params");
 		fxparam.setCollapsed(true);
@@ -209,12 +213,28 @@ function init() {
 		vus.addTrigger("Bank back", "Get Levels from the Console" , false);		
 		vus.addTrigger("Bank next", "Get Levels from the Console" , false);
 		for (var n = 1; n < banktrCount+1; n++) {
-			vus.addFloatParameter("Track "+n+"L", "", 0, 0, 1);
-			vus.addFloatParameter("Track "+n+"R", "", 0, 0, 1); }
+			var p =vus.addFloatParameter("Track "+n+"L", "", 0, 0, 1);
+			vus.addFloatParameter("Track "+n+"R", "", 0, 0, 1);  }
 		vus.addFloatParameter("Master L", "", 0, 0, 1);
 		vus.addFloatParameter("Master R", "", 0, 0, 1);			
 }
 
+//===================== MARKERS CONTAINER ===================		
+	mark=local.values.addContainer("Markers");
+		mark.addTrigger("Get Name", "" , false);
+		mark.addIntParameter("Marker No","",1, 1, 8) ;
+		mark.addStringParameter("Marker Name", "", "");
+		mark.addStringParameter("Last Marker", "", "");
+		mark.addEnumParameter("Go To Marker", "Go To Mark No", 1 , 40161 , 2 , 40162, 3 , 
+		40163 , 4, 40164 , 5, 40165 , 6, 40166 , 7, 40167 , 8, 40168 , 9, 40169 , 10, 
+		40160 , 11, 40251 , 12, 40252 , 13, 40253 , 14,040254 , 15, 40255 , 16, 
+		40256 , 17, 40257 , 18, 40258 , 19, 40259 , 20, 40260 , 
+		21, 40261 , 22, 40262 , 23, 40263 , 24, 40264 , 25, 40265 , 26, 40266 , 
+		27, 40267 , 28, 40268 , 29, 40269 , 30, 40270 , ) ;
+		mark.addTrigger("Go", "" , false);
+		mark.addTrigger("Go To Next", "" , false);
+		mark.addTrigger("Go To Prev", "" , false);
+		
 
 function moduleParameterChanged(param) {
   script.log(param.name + " parameter changed, new value: " + param.get());
@@ -263,6 +283,24 @@ function moduleValueChanged(value) {
 		var child = n+"ParamName" ;
 		local.values.fxParams.getChild(n+"ParamName").set("");
 		local.values.fxParams.getChild(n+"ParamVal").set(0);}   } 
+
+//=========== Markers =============		
+	if (value.name == "getName"){ 
+	  var no = local.values.markers.markerNo.get();
+  		local.send("/marker/"+no+"/name") ; 
+  		local.send("/device/marker/count", 8) ;
+  		local.send("/lastmarker/number/str") ; }
+  		
+  	if (value.name == "go"){ 
+	  var ma = local.values.markers.goToMarker.get();
+  		local.send("/lastmarker/number/str" , 2) ; 
+  		local.send("/action" , ma); }
+  		
+  	if (value.name == "goToNext"){ 
+  		local.send("/action" , 40173); }
+  		
+  	if (value.name == "goToPrev"){ 
+  		local.send("/action" , 40172); }
 	
 //		var track = local.values.trackParams.trackNo.get();
 //		track = Integer.parseInt(track);
@@ -277,6 +315,8 @@ function oscEvent(address, args) {
 
 //=============== TEMPO ==================
 
+	if (address == "/time"){
+		local.values.time .set(args[0]);}
 	if (address == "/tempo/raw"){
 		local.values.tempo.set(args[0]);}
 
@@ -373,6 +413,13 @@ function oscEvent(address, args) {
 	if (address == "/track/number/str") {
 	local.values.fxParams.trackNumber.set(args[0]);}
 	
+//====================MARKERS ================
+	var no = local.values.markers.markerNo.get();
+	if (address == "/marker/"+no+"/name"){
+	local.values.markers.markerName.set(args[0]); }
+	if (address == "/lastmarker/number/str"){
+	local.values.markers.lastMarker.set(args[0]);}
+
 //=============== VU METERS ==================
 		local.values.meters.firstBankTrackNo.set(numb[0]);
 	for (var n = 1; n < banktrCount+1; n++) {
@@ -492,4 +539,38 @@ function fx_drywet(no, fx, val) {
 
 function fx_bypass (no, fx, val) {
 	local.send("/track/"+no+"/fx/"+fx+"/bypass", val);
+}
+
+//  =================  Markers  ===================
+
+function prev_mark () {
+local.send("/action" , 40172);
+}
+
+function next_mark () {
+local.send("/action" , 40173);
+}
+
+function goto_mark (no) {
+local.send("/action" , no);
+}
+
+function add_mark () {
+local.send("/action" , 40157);
+}
+
+function remove_mark () {
+local.send("/action" , 40420);
+}
+
+function renumber_mark () {
+local.send("/action" , 40898);
+}
+
+function edit_mark () {
+local.send("/action" , 40614);
+}
+
+function rename_mark (no, name) {
+local.send("/marker/"+no+"/name" , name);
 }
