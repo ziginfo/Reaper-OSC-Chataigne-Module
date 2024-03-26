@@ -4,7 +4,7 @@
 	"path": "Software",
 	
 	"version": "1.4",
-	"description": "Allow you to control Ligic-Pro with chataigne",
+	"description": "Allow you to control Reaper with Chataigne",
 	"url":"https://github.com/ziginfo/Reaper-OSC-Chataigne-Module",
 	"downloadURL": "https://github.com/ziginfo/Reaper-OSC-Chataigne-Module/archive/refs/heads/main.zip",
 	
